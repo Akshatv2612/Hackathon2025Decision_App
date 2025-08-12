@@ -12,17 +12,20 @@ if project_id:
     st.write(f"Project ID: `{project_id}`")
     st.write("Please choose an action:")
 
+    # Checkbox to verify human
+    verified = st.checkbox("✅ I am not a robot")
+
     if "action_taken" not in st.session_state:
         st.session_state.action_taken = None
 
     col1, col2 = st.columns(2)
 
     with col1:
-        if st.button("✅ Approve"):
+        if st.button("✅ Approve", disabled=not verified):
             st.session_state.action_taken = "approve"
 
     with col2:
-        if st.button("❌ Reject"):
+        if st.button("❌ Reject", disabled=not verified):
             st.session_state.action_taken = "reject"
 
     if st.session_state.action_taken == "approve":
@@ -42,4 +45,3 @@ if project_id:
         st.session_state.action_taken = None
 else:
     st.error("Missing `projectId` in the URL. Please open this app with a valid request ID.")
-
