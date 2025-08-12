@@ -37,11 +37,19 @@ if project_id:
         
         try:
             response = requests.post(url, json=payload, verify=False)
-            print("Response ",response.text)
+            print("Response", response.text)
+
+            # Map actions to correct past tense
+            past_tense = {
+                "approve": "Approved",
+                "reject": "Rejected"
+            }
+
             if response.ok:
-                st.success(f"{st.session_state.action_taken.capitalize()}ed successfully!")
+                st.success(f"{past_tense[st.session_state.action_taken]} successfully!")
             else:
-                st.error(f"{st.session_state.action_taken.capitalize()} failed.")
+                st.error(f"{st.session_state.action_taken} failed.")
+
         except Exception as e:
             st.error(f"Request error: {e}")
 
