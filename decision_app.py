@@ -33,10 +33,13 @@ if project_id:
         url = f"{BASE_URL}/{st.session_state.action_taken}"
         payload = {"projectId": project_id}
         
+        print("URL ",url)
+        
         try:
             response = requests.post(url, json=payload, verify=False)
+            print("Response ",response.text)
             if response.ok:
-                st.success(f"{st.session_state.action_taken.capitalize()}d successfully!")
+                st.success(f"{st.session_state.action_taken.capitalize()}ed successfully!")
             else:
                 st.error(f"{st.session_state.action_taken.capitalize()} failed.")
         except Exception as e:
