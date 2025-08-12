@@ -1,5 +1,6 @@
 import streamlit as st
 import requests
+import json
 
 BASE_URL = "https://9ssz6ekjqa.execute-api.ap-south-1.amazonaws.com"
 
@@ -12,7 +13,7 @@ if project_id:
     st.write(f"Project ID: `{project_id}`")
     st.write("Please choose an action:")
 
-    # Checkbox to verify human
+    # Checkbox for human verification
     verified = st.checkbox("✅ I am not a robot")
 
     if "action_taken" not in st.session_state:
@@ -28,20 +29,19 @@ if project_id:
         if st.button("❌ Reject", disabled=not verified):
             st.session_state.action_taken = "reject"
 
-    if st.session_state.action_taken == "approve":
-        response = requests.get(f"{BASE_URL}/approve?projectId={project_id}", verify=False)
-        if response.ok:
-            st.success("Approved successfully!")
-        else:
-            st.error("Approval failed.")
-        st.session_state.action_taken = None  # Reset after action
+    if st.session_state.action_taken in ["approve", "reject"]:
+        url = f"{BASE_URL}/{st.session_state.action_taken}"
+        payload = {"projectId": project_id}
+        
+        try:
+            response = requests.post(url, json=payload, verify=False)
+            if response.ok:
+                st.success(f"{st.session_state.action_taken.capitalize()}d successfully!")
+            else:
+                st.error(f"{st.session_state.action_taken.capitalize()} failed.")
+        except Exception as e:
+            st.error(f"Request error: {e}")
 
-    elif st.session_state.action_taken == "reject":
-        response = requests.get(f"{BASE_URL}/reject?projectId={project_id}", verify=False)
-        if response.ok:
-            st.success("Rejected successfully!")
-        else:
-            st.error("Rejection failed.")
         st.session_state.action_taken = None
 else:
     st.error("Missing `projectId` in the URL. Please open this app with a valid request ID.")
